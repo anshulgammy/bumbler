@@ -1,6 +1,7 @@
 package dev.bumbler.rxjava.basics;
 
 import io.reactivex.Observable;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Schedulers;
 
 import java.util.Arrays;
@@ -18,6 +19,8 @@ public class HelloRxJava {
         observableWithErrorHandlingAtSubscribeLevel();
         observableWithErrorHandlingAtOperatorLevel();
         observableWithRetry();
+        hotObservableExample();
+        hotObservableChangedOrderExample();
     }
 
     /**
@@ -195,6 +198,36 @@ public class HelloRxJava {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void hotObservableExample() {
+
+        ConnectableObservable<Integer> observable = Observable.range(1, 3).publish();
+
+        observable.subscribe(element -> {
+            System.out.println("Observer 1 printing: " + element);
+        });
+
+        observable.subscribe(element -> {
+            System.out.println("Observer 2 printing: " + element);
+        });
+
+        observable.connect();
+    }
+
+    private static void hotObservableChangedOrderExample() {
+
+        ConnectableObservable<Integer> observable = Observable.range(1, 3).publish();
+
+        observable.subscribe(element -> {
+            System.out.println("Observer 1 printing: " + element);
+        });
+
+        observable.connect();
+
+        observable.subscribe(element -> {
+            System.out.println("Observer 2 printing: " + element);
+        });
     }
 
     private static void print(Integer element) {
