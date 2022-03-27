@@ -3,7 +3,6 @@ package dev.bumbler.springreactiverestapi;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
@@ -81,7 +80,7 @@ public class StudentService {
   }
 
   /**
-   * Fetches students from database
+   * Fetches students from MongoDb.
    *
    * @return - Flux<Student>
    */
@@ -89,17 +88,35 @@ public class StudentService {
     return studentRepository.findAll();
   }
 
+  /**
+   * Fetches Mono<Student> from MongoDb based on the studentId sent by the API
+   *
+   * @param - ServerRequest
+   * @return - Mono<Student>
+   */
   public Mono<Student> getStudent(ServerRequest serverRequest) {
     long studentId = Long.valueOf(serverRequest.pathVariable("studentId"));
     return studentRepository.findById(studentId);
   }
 
+  /**
+   * Adds new Student to MongoDb.
+   *
+   * @param - ServerRequest
+   * @return - Mono<Student>
+   */
   public Mono<Student> addStudent(ServerRequest serverRequest) {
     Mono<Student> newStudentMono = serverRequest.bodyToMono(Student.class);
     Mono<Student> addedStudentMono = newStudentMono.flatMap(studentRepository::insert);
     return addedStudentMono;
   }
 
+  /**
+   * Updates existing student in MongoDb.
+   *
+   * @param - ServerRequest
+   * @return - Mono<Student>
+   */
   public Mono<Student> updateStudent(ServerRequest serverRequest) {
     Mono<Student> requestedStudentMono = serverRequest.bodyToMono(Student.class);
     Mono<Student> updatedStudentMono = requestedStudentMono.flatMap(student -> {
@@ -108,6 +125,12 @@ public class StudentService {
     return updatedStudentMono;
   }
 
+  /**
+   * Deletes existing student in MongoDb based on studentId.
+   *
+   * @param - ServerRequest
+   * @return - Mono<Student>
+   */
   public Mono<Void> deleteStudent(ServerRequest serverRequest) {
     long studentId = Long.valueOf(serverRequest.pathVariable("studentId"));
     return studentRepository.deleteById(studentId);
