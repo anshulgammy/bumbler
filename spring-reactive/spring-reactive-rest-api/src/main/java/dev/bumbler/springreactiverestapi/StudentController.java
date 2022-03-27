@@ -14,30 +14,30 @@ import java.util.List;
 @RequestMapping("/v1/api")
 public class StudentController {
 
-    private StudentService studentService;
+  private StudentService studentService;
 
-    @Autowired
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
+  @Autowired
+  public StudentController(StudentService studentService) {
+    this.studentService = studentService;
+  }
 
-    /**
-     * Fetches List of Students synchronously.
-     *
-     * @return - ResponseEntity<List<Student>>
-     */
-    @GetMapping("/students")
-    public ResponseEntity<List<Student>> getSyncStudents() {
-        return ResponseEntity.ok(studentService.getStudentsList());
-    }
+  /**
+   * Fetches List of Students synchronously.
+   *
+   * @return - ResponseEntity<List<Student>>
+   */
+  @GetMapping("/students")
+  public ResponseEntity<List<Student>> getSyncStudents() {
+    return ResponseEntity.ok(studentService.getStudentsList());
+  }
 
-    /**
-     * Fetches Flux of Students.
-     *
-     * @return - Flux<Student>
-     */
-    @GetMapping(value = "/async/students", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Student> getAsyncStudents() {
-        return studentService.getStudentsFlux();
-    }
+  /**
+   * Fetches Flux of Students.
+   *
+   * @return - Flux<Student>
+   */
+  @GetMapping(value = "/async/students", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<Student> getAsyncStudents() {
+    return studentService.getStudentsFlux();
+  }
 }
