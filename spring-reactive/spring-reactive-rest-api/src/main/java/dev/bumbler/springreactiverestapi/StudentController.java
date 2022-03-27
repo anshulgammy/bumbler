@@ -6,8 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -22,13 +21,23 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    /**
+     * Fetches List of Students synchronously.
+     *
+     * @return - ResponseEntity<List<Student>>
+     */
     @GetMapping("/students")
     public ResponseEntity<List<Student>> getSyncStudents() {
-        return ResponseEntity.ok(studentService.getSyncStudents());
+        return ResponseEntity.ok(studentService.getStudentsList());
     }
 
+    /**
+     * Fetches Flux of Students.
+     *
+     * @return - Flux<Student>
+     */
     @GetMapping(value = "/async/students", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<ServerResponse> getAsyncStudents() {
-        return studentService.getAsyncStudents();
+    public Flux<Student> getAsyncStudents() {
+        return studentService.getStudentsFlux();
     }
 }

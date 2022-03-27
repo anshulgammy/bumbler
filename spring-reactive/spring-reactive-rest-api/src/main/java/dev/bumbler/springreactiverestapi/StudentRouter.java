@@ -17,12 +17,12 @@ public class StudentRouter {
         this.studentService = studentService;
     }
 
-    @Bean
+    /*@Bean
     public RouterFunction<ServerResponse> routerFunction() {
         return RouterFunctions.route()
-                .GET("/v1/api/async/students", serverRequest -> {
+                .GET("/v1/api/router/students", serverRequest -> {
                     return studentService.getAsyncStudents();
                 })
                 .build();
-    }
+    }*/
 }
