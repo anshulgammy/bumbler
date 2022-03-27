@@ -101,16 +101,11 @@ public class StudentService {
   }
 
   public Mono<Student> updateStudent(ServerRequest serverRequest) {
-    Mono<Student> requestedStudent = serverRequest.bodyToMono(Student.class);
-    AtomicLong studentId = new AtomicLong();
-    requestedStudent.subscribe(student -> {
-      studentId.set(student.getId());
-      studentRepository.findById(student.getId())
-          .map(s -> student)
-          .flatMap(studentRepository::save);
+    Mono<Student> requestedStudentMono = serverRequest.bodyToMono(Student.class);
+    Mono<Student> updatedStudentMono = requestedStudentMono.flatMap(student -> {
+      return studentRepository.save(student);
     });
-
-    return studentRepository.findById(studentId.get());
+    return updatedStudentMono;
   }
 
   public Mono<Void> deleteStudent(ServerRequest serverRequest) {
