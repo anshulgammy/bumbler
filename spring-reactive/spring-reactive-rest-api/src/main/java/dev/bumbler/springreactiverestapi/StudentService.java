@@ -33,9 +33,9 @@ public class StudentService {
     studentList.addAll(
         IntStream.rangeClosed(1, 20)
             .mapToObj(element -> {
-              int rollNumber = element;
-              String name = "Student " + rollNumber;
-              return new Student(rollNumber, name);
+              int id = element;
+              String name = "Student " + id;
+              return new Student(id, name, id);
             }).collect(Collectors.toList())
     );
   }
@@ -51,9 +51,9 @@ public class StudentService {
             .peek(element -> System.out.println("Fetched student with id: " + element))
             .peek(StudentService::sleep)
             .mapToObj(element -> {
-              int rollNumber = element;
-              String name = "Student " + rollNumber;
-              return new Student(rollNumber, name);
+              int id = element;
+              String name = "Student " + id;
+              return new Student(id, name, id);
             }).collect(Collectors.toList());
     return fetchedStudentList;
   }
