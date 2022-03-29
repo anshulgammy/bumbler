@@ -4,6 +4,7 @@ The following was discovered as part of building this project:
 * The original package name 'dev.bumbler.spring-reactive-rest-api' is invalid and this project uses 'dev.bumbler.springreactiverestapi' instead.
 
 # Getting Started
+This repository contains Restful APIs developed in Reactive Way, using Spring WebFlux and ReactiveMongoRepository.
 
 ### Reference Documentation
 For further reference, please consider the following sections:
