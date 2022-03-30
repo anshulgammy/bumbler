@@ -150,6 +150,22 @@ public class StreamApiTestByAnshul {
         .collect(Collectors.toList());
 
     products.forEach(product -> log.info(product.toString()));
+  }
+
+  /**
+   * Calculate total lump sum of all orders placed in Feb 2021
+   */
+  @Test
+  @DisplayName("Exercise 8")
+  public void exercise_8() {
+    double sum = orderRepo.findAll().stream()
+        .filter(order -> order.getOrderDate().compareTo(LocalDate.of(2021, 2, 1)) >= 0)
+        .filter(order -> order.getOrderDate().compareTo(LocalDate.of(2021, 3, 1)) < 0)
+        .flatMap(order -> order.getProducts().stream())
+        .mapToDouble(Product::getPrice)
+        .sum();
+
+    log.info(String.valueOf(sum));
 
   }
 
