@@ -79,6 +79,11 @@ public class CompletableFuturesDemo {
             } catch (ExecutionException e) {
               e.printStackTrace();
             }
+          })
+          // After all the CompletableFuture are done, doing System.exit() to terminate
+          // the application.
+          .thenRun(() -> {
+            System.exit(0);
           });
     } catch (InterruptedException e) {
       e.printStackTrace();
