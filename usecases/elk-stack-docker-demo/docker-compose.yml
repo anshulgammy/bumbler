@@ -1,0 +1,93 @@
+# Notes:
+
+# I have specified a custom network, 'elk', for all the services defined in this docker-compose file.
+# If we don't specify the network, then by default Compose sets up a single network for your app.
+# Each container for a service joins the default network and is both reachable by other containers on that network,
+# and discoverable by them at a hostname identical to the 'container' name.
+# If we define a custom network, like the way I did in this demo, each service can specify what networks
+# to connect to with the service-level networks key, which is a list of names referencing entries under the top-level networks key.
+
+# Links allow you to define extra aliases by which a service is reachable from another service.
+# They are not required to enable services to communicate - by default, any service can reach any other
+# service at that service’s name.
+
+# Using environment in docker-compose, we can supply the key-value pair for environment variables
+# which will be passed to the container.
+
+# Using the instructions in this docker-compose file, Images will be built from the Dockerfile present at the
+# mentioned path.
+
+# Used -f to specify name and path of one or more Compose files. I have used the -f flag, under command section,
+# to specify the location of additional Compose configuration file for logstash.
+
+# In this example, Kibana and Logstash are having their dedicated configuration files, which are being
+# supplied to the container via this compose file.
+
+# Communication to Logstash from Spring Boot application is being done by referring to logstash container name,
+# as the host.
+
+# In configuration files for Kibana and Logstash, I have referred to elastic search instance host, via
+# elastic search's container name only.
+
+# The Spring Boot Application 'student-courses' has log4j configuration. In Spring Boot starters,
+# Logback is used for logging by default. I have excluded that dependency, and used log4j2. The intention
+# for using this was to have more granular control, and create a TCP appender, which is being used
+# by Logstash in this demo.
+# Logstash is picking up the logs via TCP port 9999. All these configurations are present in log4j2-config.xml
+# file in the student-courses application.
+version: "3"
+services:
+  student-courses:
+    build: student-courses/
+    container_name: bumbler-student-courses-api
+    image: bumbler-student-courses-api:1.0
+    ports:
+      - "8001:8001"
+    links:
+      - logstash
+    networks:
+      - elk
+
+  elasticsearch:
+    build: elk/elasticsearch/
+    image: bumbler-elasticsearch:1.0
+    container_name: bumbler-elasticsearch
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    networks:
+      - elk
+
+  logstash:
+    build: elk/logstash/
+    image: bumbler-logstash:1.0
+    container_name: bumbler-logstash
+    command: -f /etc/logstash/conf.d/
+    volumes:
+      - ./elk/logstash/config:/etc/logstash/conf.d
+    ports:
+      - "9999:9999"
+    links:
+      - elasticsearch
+    networks:
+      - elk
+
+  kibana:
+    build: elk/kibana/
+    image: bumbler-kibana:1.0
+    container_name: bumbler-kibana
+    volumes:
+      - ./elk/kibana/config/:/opt/kibana/config/
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+    networks:
+      - elk
+
+networks:
+  elk:

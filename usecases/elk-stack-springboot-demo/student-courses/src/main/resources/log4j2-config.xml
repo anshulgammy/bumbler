@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" strict="true" monitorInterval="30">
+
+  <Properties>
+    <!--I am not using file based log appender in this example. All the configuration related to this,
+    I have commented them out-->
+    <!--<Property name="filename">D:/student-courses/log.log</Property>-->
+		<!--Only Socket and STDOUT appenders are being used-->
+    <Property name="defaultpattern">logdate=(%d{ISO8601}) thread=(%thread)) level=(%level)
+      loggerclass=(%logger{36}) message=(%msg)%n
+    </Property>
+  </Properties>
+  <Filter type="ThresholdFilter" level="trace"/>
+
+  <Appenders>
+    <Appender type="Console" name="STDOUT">
+      <Layout type="PatternLayout" pattern="${defaultpattern}"/>
+    </Appender>
+    <!--<Appender type="File" name="File" fileName="${filename}">
+      <Layout type="PatternLayout" pattern="${defaultpattern}" />
+    </Appender>-->
+    <!-- hostname used below is the docker container name of the logstash running in the local-->
+    <Socket name="socket" host="bumbler-logstash" port="9999" reconnectionDelayMillis="5000">
+      <Layout type="PatternLayout" pattern="${defaultpattern}"/>
+    </Socket>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="dev.bumbler.microservice.student.courses" level="info" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+      <!--<AppenderRef ref="File"/>-->
+      <AppenderRef ref="socket"/>
+    </Logger>
+    <Root level="warn">
+      <AppenderRef ref="STDOUT"/>
+      <!--<AppenderRef ref="File"/>-->
+      <AppenderRef ref="socket"/>
+    </Root>
+  </Loggers>
+
+</Configuration>
