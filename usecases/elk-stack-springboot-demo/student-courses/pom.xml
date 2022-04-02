@@ -14,6 +14,7 @@
     <groupId>dev.bumbler</groupId>
     <artifactId>student-courses</artifactId>
     <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
 
     <properties>
         <java.version>17</java.version>
