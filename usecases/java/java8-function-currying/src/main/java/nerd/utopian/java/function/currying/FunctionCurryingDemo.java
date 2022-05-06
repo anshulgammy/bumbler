@@ -1,4 +1,4 @@
-package dev.bumbler.java.function.currying;
+package nerd.utopian.java.function.currying;
 
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -8,7 +8,7 @@ public class FunctionCurryingDemo {
 
     public static void main(String[] args) {
 
-        SandwichOvenOperator sandwichOvenOperator = new SandwichOvenOperator();
+        SandwichOven sandwichOvenOperator = new SandwichOvenOperator();
 
         // performing apply() in the order of veggies -> eggs -> meat -> pepper -> onion, which is
         // defined in the SandwichOvenOperator.apply(bread) method.
