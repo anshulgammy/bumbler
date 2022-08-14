@@ -18,9 +18,9 @@ import org.json.JSONObject;
 
 public class JsonStructureValidationUtil {
 
-  private static final String JSON_STRUCTURE_EQUAL = "Actual and Expected JSON Structures are Equal!";
-  private static final String JSON_STRUCTURE_MISSING_ELEMENTS = "Actual JSON Structure has Missing Elements:";
-  private static final String JSON_STRUCTURE_ADDITIONAL_ELEMENTS = "Actual JSON Structure has Additional Elements:";
+  private static final String JSON_STRUCTURE_EQUAL = "*** Actual JSON Structure has all the elements from Expected JSON Structure";
+  private static final String JSON_STRUCTURE_MISSING_ELEMENTS = "*** Actual JSON Structure has Missing Elements:";
+  private static final String JSON_STRUCTURE_ADDITIONAL_ELEMENTS = "*** Actual JSON Structure has Additional Elements:";
 
   public static List<String> validateJsonStructure(String actualJsonString,
       String expectedJsonString) {
@@ -38,18 +38,17 @@ public class JsonStructureValidationUtil {
     List<String> jsonPathListExpected = new ImmutableList.Builder<String>().addAll(
         getJsonPathList(expectedJsonString)).build();
 
-    boolean structureEqual = validateEquality(jsonPathListExpected, jsonPathListActual);
+    boolean structureEqual = validateEquality(jsonPathListActual, jsonPathListExpected);
 
     if (structureEqual) {
       jsonStructureValidationResultList.add(JSON_STRUCTURE_EQUAL);
-
-    } else {
-      populateMissingElements(jsonPathListExpected, jsonPathListActual,
-          jsonStructureValidationResultList);
-
-      populateAdditionalElements(jsonPathListExpected, jsonPathListActual,
-          jsonStructureValidationResultList);
     }
+
+    populateMissingElements(jsonPathListExpected, jsonPathListActual,
+        jsonStructureValidationResultList);
+
+    populateAdditionalElements(jsonPathListExpected, jsonPathListActual,
+        jsonStructureValidationResultList);
 
     return jsonStructureValidationResultList;
   }
@@ -61,7 +60,7 @@ public class JsonStructureValidationUtil {
 
     List<String> jsonPathListExp = new ArrayList<>(jsonPathListExpected);
 
-    // In case of additional elements, JsonPath for actual will always contain more.
+    // In case of additional elements, JsonPath for Actual will always contain more.
     jsonPathListAct.removeAll(jsonPathListExp);
 
     if (!jsonPathListAct.isEmpty()) {
@@ -77,7 +76,7 @@ public class JsonStructureValidationUtil {
 
     List<String> jsonPathListExp = new ArrayList<>(jsonPathListExpected);
 
-    // In case of missing elements, JsonPath for expected will always contain more.
+    // In case of missing elements, JsonPath for Expected will always contain more.
     jsonPathListExp.removeAll(jsonPathListAct);
 
     if (!jsonPathListExp.isEmpty()) {
@@ -89,7 +88,7 @@ public class JsonStructureValidationUtil {
   private static boolean validateEquality(List<String> jsonPathListActual,
       List<String> jsonPathListExpected) {
 
-    // JsonPath should be equal.
+    // Actual should have all the properties' name which are present in Expected.
     return jsonPathListActual.containsAll(jsonPathListExpected);
   }
 
@@ -162,7 +161,7 @@ public class JsonStructureValidationUtil {
   public static void displayResults(List<String> jsonStructureValidationResultList) {
 
     for (String structure : jsonStructureValidationResultList) {
-      System.out.println(structure);
+      System.out.println(structure + System.lineSeparator());
     }
   }
 }
