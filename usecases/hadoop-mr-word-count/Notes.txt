@@ -1,0 +1,43 @@
+Notes
+###########################################################################
+HDP Docker: 
+
+Ambari: raj_ops/raj_ops and maria_dev/maria_dev are Dev Users.
+Admin user: admin/hadoop.
+
+docker stop sandbox-proxy
+docker stop sandbox-hdp
+
+docker start sandbox-hdp
+docker start sandbox-proxy
+
+Connect to Terminal:
+ssh maria_dev@127.0.0.1 -p 2222
+
+hadoop fs -<your command to do operation on hdfs>
+hadoop jar <you-mr-jar.jar> <fully-qualified-main-class> <input-location> <output-location>
+
+hadoop jar hadoop-mr-movie-rating-1.0-SNAPSHOT.jar nerd.utopian.movierating.MovieRatingRunner /user/maria_dev/input /user/maria_dev/output
+
+hadoop fs -cat /user/maria_dev/output/part-r-00000
+###########################################################################
+
+Port Issue with Docker Container on Windows 10:
+
+netsh int ipv4 set dynamic tcp start=64000 num=1000
+netsh int ipv6 set dynamic tcp start=64000 num=1000
+netsh int ipv4 show dynamicport tcp
+
+netsh int ipv4 show excludedportrange protocol=tcp
+
+reg add HKLM\SYSTEM\CurrentControlSet\Services\hns\State /v EnableExcludedPortRange /d 0 /f
+https://serverfault.com/questions/1045527/how-do-i-find-out-why-certain-ports-are-excluded-and-delete-the-exclusion
+
+I found an answer at this GitHub comment: you might try
+
+net stop winnat
+to free the port. This worked for you in Windows 10 2004, and for me in Windows 10 20H2.
+
+Port related errors can be solved using: https://medium.com/@sevenall/completely-solve-the-problem-of-docker-containers-not-starting-or-running-on-windows-10-due-to-port-57f16ed6143
+
+###########################################################################
