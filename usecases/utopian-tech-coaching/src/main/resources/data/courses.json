@@ -1,0 +1,27 @@
+[
+  {
+    "courseId": 1001,
+    "courseName": "Java Basics",
+    "isActive": true
+  },
+  {
+    "courseId": 1002,
+    "courseName": "Spring Boot Basics",
+    "isActive": true
+  },
+  {
+    "courseId": 1003,
+    "courseName": "Spring Boot Advanced",
+    "isActive": true
+  },
+  {
+    "courseId": 1004,
+    "courseName": "Kafka Basics",
+    "isActive": true
+  },
+  {
+    "courseId": 1005,
+    "courseName": "Hadoop Basics",
+    "isActive": false
+  }
+]

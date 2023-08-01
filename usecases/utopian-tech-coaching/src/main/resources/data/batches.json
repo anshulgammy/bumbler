@@ -1,0 +1,42 @@
+[
+  {
+    "batchId": 1001,
+    "courseId": 1001,
+    "batchStartDate": "2023-01-23",
+    "batchEndDate": "2023-09-23",
+    "totalSeatsCapacity": 500,
+    "totalSeatsAvailable": 100
+  },
+  {
+    "batchId": 1002,
+    "courseId": 1002,
+    "batchStartDate": "2023-02-23",
+    "batchEndDate": "2023-10-23",
+    "totalSeatsCapacity": 400,
+    "totalSeatsAvailable": 50
+  },
+  {
+    "batchId": 1003,
+    "courseId": 1003,
+    "batchStartDate": "2023-03-23",
+    "batchEndDate": "2023-11-23",
+    "totalSeatsCapacity": 300,
+    "totalSeatsAvailable": 60
+  },
+  {
+    "batchId": 1004,
+    "courseId": 1004,
+    "batchStartDate": "2023-04-23",
+    "batchEndDate": "2023-10-23",
+    "totalSeatsCapacity": 300,
+    "totalSeatsAvailable": 60
+  },
+  {
+    "batchId": 1005,
+    "courseId": 1005,
+    "batchStartDate": "2023-05-23",
+    "batchEndDate": "2023-11-23",
+    "totalSeatsCapacity": 700,
+    "totalSeatsAvailable": 600
+  }
+]

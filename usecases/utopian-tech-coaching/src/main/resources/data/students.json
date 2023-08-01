@@ -1,0 +1,37 @@
+[
+  {
+    "studentId": 9001,
+    "batchId": 1001,
+    "fullName": "Ankush Agrawal",
+    "fullAddress": "Patna",
+    "isActive": true
+  },
+  {
+    "studentId": 9002,
+    "batchId": 1001,
+    "fullName": "Rahul Agrawal",
+    "fullAddress": "Patna",
+    "isActive": true
+  },
+  {
+    "studentId": 9003,
+    "batchId": 1001,
+    "fullName": "Sonam Jha",
+    "fullAddress": "Ranchi",
+    "isActive": true
+  },
+  {
+    "studentId": 9004,
+    "batchId": 1002,
+    "fullName": "Supriya Tonk",
+    "fullAddress": "Jamshedur",
+    "isActive": true
+  },
+  {
+    "studentId": 9005,
+    "batchId": 1003,
+    "fullName": "Rajeev Pandey",
+    "fullAddress": "Muzaffarpur",
+    "isActive": true
+  }
+]
