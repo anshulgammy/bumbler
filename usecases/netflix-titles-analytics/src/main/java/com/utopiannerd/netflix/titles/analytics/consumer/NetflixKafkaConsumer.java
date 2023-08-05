@@ -2,6 +2,7 @@ package com.utopiannerd.netflix.titles.analytics.consumer;
 
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.NON_NULL_OR_EMPTY_CHECK_MESSAGE;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.createKafkaConsumerConfigurationMap;
+import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKafkaResource;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Preconditions;
@@ -47,6 +48,7 @@ public final class NetflixKafkaConsumer {
     Map<String, Object> kafkaConfigurationMap = createKafkaConsumerConfigurationMap();
     KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(kafkaConfigurationMap);
     kafkaConsumer.subscribe(Arrays.asList(topicName));
+    shutdownKafkaResource(kafkaConsumer);
     return kafkaConsumer;
   }
 }

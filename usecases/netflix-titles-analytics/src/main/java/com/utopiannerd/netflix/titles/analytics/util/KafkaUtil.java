@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -94,6 +96,16 @@ public final class KafkaUtil {
                     KafkaStreams kafkaStreams = (KafkaStreams) resource;
                     kafkaStreams.close();
                     LOGGER.info("Stopping KafkaStreams completed");
+                  } else if (resource instanceof KafkaConsumer) {
+                    LOGGER.info("Stopping KafkaConsumer");
+                    KafkaConsumer kafkaConsumer = (KafkaConsumer) resource;
+                    kafkaConsumer.close();
+                    LOGGER.info("Stopping KafkaConsumer completed");
+                  } else if (resource instanceof KafkaProducer) {
+                    LOGGER.info("Stopping KafkaProducer");
+                    KafkaProducer kafkaProducer = (KafkaProducer) resource;
+                    kafkaProducer.close();
+                    LOGGER.info("Stopping KafkaProducer completed");
                   }
                 }));
   }

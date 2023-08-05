@@ -2,6 +2,7 @@ package com.utopiannerd.netflix.titles.analytics.producer;
 
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.NON_NULL_OR_EMPTY_CHECK_MESSAGE;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.createKafkaProducerConfigurationMap;
+import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKafkaResource;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Preconditions;
@@ -45,6 +46,8 @@ public final class NetflixKafkaProducer {
 
   private KafkaProducer<String, String> createProducer() {
     Map<String, Object> kafkaConfigurationMap = createKafkaProducerConfigurationMap();
-    return new KafkaProducer<>(kafkaConfigurationMap);
+    KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(kafkaConfigurationMap);
+    shutdownKafkaResource(kafkaProducer);
+    return kafkaProducer;
   }
 }
