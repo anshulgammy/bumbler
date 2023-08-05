@@ -6,6 +6,9 @@ import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKa
 
 import com.google.common.base.Preconditions;
 import com.utopiannerd.netflix.titles.analytics.model.NetflixTitle;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -17,6 +20,9 @@ import org.slf4j.LoggerFactory;
 public class NetflixKafkaStreamListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NetflixKafkaStreamListener.class);
+
+  private static final List<String> CENSORED_KEYWORDS = Arrays.asList("Mafia", "Murder", "Black");
+  private static final String MASKED_STRING = "***";
 
   private final String topicName;
 
@@ -31,9 +37,12 @@ public class NetflixKafkaStreamListener {
     LOGGER.info("processStream started");
 
     StreamsBuilder streamsBuilder = new StreamsBuilder();
+
+    // Step 1: Getting the raw data KStream.
     KStream<String, String> kStream = streamsBuilder.stream(topicName);
 
-    // Preparing transformed KStream of KStream<String, NetflixTitle>.
+    // Step 2: Using the raw data KStream to preparing transformed KStream of KStream<String,
+    // NetflixTitle>.
     KStream<String, NetflixTitle> transformedKStream =
         kStream.mapValues(
             (key, value) -> {
@@ -56,9 +65,27 @@ public class NetflixKafkaStreamListener {
               return netflixTitle;
             });
 
-    transformedKStream.foreach(
-        (key, value) ->
-            LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
+    transformedKStream
+        // Filter all such titles which are listed under type "TV Show".
+        .filter((key, value) -> StringUtils.containsIgnoreCase(value.getType(), "TV Show"))
+        // Replace censored words present in title's description with masked characters.
+        /*.mapValues(
+            (key, value) -> {
+              AtomicReference<String> titleDescription =
+                  new AtomicReference<>(value.getDescription());
+              CENSORED_KEYWORDS.forEach(
+                  censoredKeyword -> {
+                    if (StringUtils.containsIgnoreCase(titleDescription.get(), censoredKeyword)) {
+                      titleDescription.set(
+                          StringUtils.replace(
+                              titleDescription.get(), censoredKeyword, MASKED_STRING));
+                    }
+                  });
+              return NetflixTitle.builder(value).setDescription(titleDescription.get());
+            })*/
+        .foreach(
+            (key, value) ->
+                LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
 
     KafkaStreams kafkaStreams =
         new KafkaStreams(
