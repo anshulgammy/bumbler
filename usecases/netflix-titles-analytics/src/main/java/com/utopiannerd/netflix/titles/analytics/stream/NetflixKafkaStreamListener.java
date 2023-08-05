@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
@@ -21,7 +22,7 @@ public class NetflixKafkaStreamListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NetflixKafkaStreamListener.class);
 
-  private static final List<String> CENSORED_KEYWORDS = Arrays.asList("Mafia", "Murder", "Black");
+  private static final List<String> CENSORED_KEYWORDS = Arrays.asList("Blood", "Game");
   private static final String MASKED_STRING = "***";
 
   private final String topicName;
@@ -32,9 +33,9 @@ public class NetflixKafkaStreamListener {
         StringUtils.isNotBlank(topicName), NON_NULL_OR_EMPTY_CHECK_MESSAGE.apply("topicName"));
   }
 
-  public void processStream() {
+  public void processStreamStateless() {
 
-    LOGGER.info("processStream started");
+    LOGGER.info("processStreamStateless started");
 
     StreamsBuilder streamsBuilder = new StreamsBuilder();
 
@@ -68,21 +69,20 @@ public class NetflixKafkaStreamListener {
     transformedKStream
         // Filter all such titles which are listed under type "TV Show".
         .filter((key, value) -> StringUtils.containsIgnoreCase(value.getType(), "TV Show"))
-        // Replace censored words present in title's description with masked characters.
-        /*.mapValues(
+        // Replace censored words present in title name with masked characters.
+        .map(
             (key, value) -> {
-              AtomicReference<String> titleDescription =
-                  new AtomicReference<>(value.getDescription());
+              AtomicReference<String> titleName = new AtomicReference<>(value.getTitle());
               CENSORED_KEYWORDS.forEach(
                   censoredKeyword -> {
-                    if (StringUtils.containsIgnoreCase(titleDescription.get(), censoredKeyword)) {
-                      titleDescription.set(
-                          StringUtils.replace(
-                              titleDescription.get(), censoredKeyword, MASKED_STRING));
+                    if (StringUtils.containsIgnoreCase(titleName.get(), censoredKeyword)) {
+                      titleName.set(
+                          StringUtils.replace(titleName.get(), censoredKeyword, MASKED_STRING));
                     }
                   });
-              return NetflixTitle.builder(value).setDescription(titleDescription.get());
-            })*/
+              return KeyValue.pair(
+                  key, NetflixTitle.builder(value).setTitle(titleName.get()).build());
+            })
         .foreach(
             (key, value) ->
                 LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
@@ -94,6 +94,6 @@ public class NetflixKafkaStreamListener {
 
     shutdownKafkaResource(kafkaStreams);
 
-    LOGGER.info("processStream completed");
+    LOGGER.info("processStreamStateless completed");
   }
 }
