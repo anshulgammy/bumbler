@@ -9,6 +9,7 @@ import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfig
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.MAX_IN_FLIGHT_CONN;
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.RETRIES_CONFIG;
 
+import com.utopiannerd.netflix.titles.analytics.serdes.CustomSerdes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -82,6 +83,21 @@ public final class KafkaUtil {
         StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
     kafkaConfigurationMap.put(
         StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+
+    return kafkaConfigurationMap;
+  }
+
+  public static Map<String, Object> createKafkaTransformedStreamConfigurationMap() {
+
+    Map<String, Object> kafkaConfigurationMap = new HashMap<>();
+
+    kafkaConfigurationMap.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+    kafkaConfigurationMap.put(StreamsConfig.APPLICATION_ID_CONFIG, "testKS");
+    kafkaConfigurationMap.put(
+        StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+    kafkaConfigurationMap.put(
+        StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+        CustomSerdes.netflixTitleSerdes().getClass());
 
     return kafkaConfigurationMap;
   }

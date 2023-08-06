@@ -44,10 +44,16 @@ public class NetflixTitlesAnalyticsApplication {
     // NetflixKafkaConsumer netflixRawDataConsumer = new NetflixKafkaConsumer(RAW_DATA_TOPIC);
     // netflixRawDataConsumer.consume();
 
-    // Custom KafkaStream Consumer.
+    // Custom KafkaStream which will do filter and transformation on data coming from raw-data-topic
+    // and then write to sanitized-data-topic.
     NetflixKafkaStreamListener netflixKafkaStreamListener =
         new NetflixKafkaStreamListener(RAW_DATA_TOPIC);
     netflixKafkaStreamListener.processStream();
+
+    // Custom KafkaStream which will read from sanitized-data-topic and peek the elements.
+    /*NetflixKafkaTransformedStreamListener netflixKafkaTransformedStreamListener =
+        new NetflixKafkaTransformedStreamListener(SANITIZED_DATA_TOPIC);
+    netflixKafkaTransformedStreamListener.processStream();*/
 
     // As long as NetflixTitlesStreamingAgent keeps pushing to the raw-data-topic, the application
     // will keep on running.

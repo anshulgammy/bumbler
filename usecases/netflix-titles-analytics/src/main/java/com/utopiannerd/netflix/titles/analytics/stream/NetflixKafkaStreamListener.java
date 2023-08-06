@@ -23,7 +23,7 @@ import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NetflixKafkaStreamListener {
+public final class NetflixKafkaStreamListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NetflixKafkaStreamListener.class);
 
@@ -86,14 +86,15 @@ public class NetflixKafkaStreamListener {
                     }
                   });
               return KeyValue.pair(
-                  key, NetflixTitle.builder(value).setTitle(titleName.get()).build());
+                  key, NetflixTitle.builder(value).setTitle(titleName.get()).build().toString());
             })
-        // Step 5: Output the transformed stream to sanitized-data-topic-1.
-        // .to(SANITIZED_DATA_TOPIC_1, Produced.with(Serdes.String(),
-        // CustomSerdes.netflixTitleSerdes()));
         .peek(
             (key, value) ->
                 LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
+    // Step 5: Output the transformed stream to sanitized-data-topic.
+    /*.to(
+    SANITIZED_DATA_TOPIC,
+    Produced.with(Serdes.String(), Serdes.String()));*/
 
     transformedKStream
         .map((key, value) -> KeyValue.pair(value.getType(), value.toString()))
