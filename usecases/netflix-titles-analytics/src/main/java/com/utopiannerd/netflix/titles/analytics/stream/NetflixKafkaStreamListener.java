@@ -11,11 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Suppressed;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,17 +96,16 @@ public class NetflixKafkaStreamListener {
                 LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
 
     transformedKStream
-        .filter((key, value) -> StringUtils.equalsIgnoreCase(value.getType(), "Movie"))
+        .map((key, value) -> KeyValue.pair(value.getType(), value.toString()))
         .groupByKey()
-        .windowedBy(TimeWindows.of(Duration.ofSeconds(60)))
-        .count()
+        .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(60)))
+        .count(Materialized.with(Serdes.String(), Serdes.Long()))
+        .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
         .peek(
             (key, value) ->
                 LOGGER.info(
-                    "windowedBy 1 minute window Id: {} and count: {}",
-                    key.toString(),
-                    value.toString()));
+                    "windowedBy result key: {} and value: {}", key.key(), value.toString()));
 
     KafkaStreams kafkaStreams =
         new KafkaStreams(
