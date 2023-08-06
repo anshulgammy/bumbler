@@ -26,9 +26,14 @@
 /mnt/d/DevTools/kafka_2.13-3.5.0/bin/zookeeper-server-start.sh /mnt/d/DevTools/kafka_2.13-3.5.0/config/zookeeper.properties
 - Start Kafka server/broker
 /mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-server-start.sh /mnt/d/DevTools/kafka_2.13-3.5.0/config/server.properties
-- Create topic
+- Create topics
 /mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic raw-data-topic
-/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic sanitized-data-topic
+/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic sanitized-data-topic-1
+/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic sanitized-data-topic-2
+- Overview of topics used 
+raw-data-topic: This topic is populated by NetflixTitlesStreamingAgent with raw data.
+sanitized-data-topic-1: This topic is populated by NetflixKafkaStreamListener, after applying filter logic and doing stateless transformation.
+sanitized-data-topic-2: This topic is populated by NetflixKafkaStreamListener, after applying filter logic and doing stateful transformation.
 - List all created topics:
 /mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --list --bootstrap-server 127.0.0.1:9092
 - If working with WSL2, make sure to have:

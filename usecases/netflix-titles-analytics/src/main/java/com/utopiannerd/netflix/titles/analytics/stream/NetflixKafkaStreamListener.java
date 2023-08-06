@@ -6,6 +6,7 @@ import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKa
 
 import com.google.common.base.Preconditions;
 import com.utopiannerd.netflix.titles.analytics.model.NetflixTitle;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -15,6 +16,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +35,9 @@ public class NetflixKafkaStreamListener {
         StringUtils.isNotBlank(topicName), NON_NULL_OR_EMPTY_CHECK_MESSAGE.apply("topicName"));
   }
 
-  public void processStreamStateless() {
+  public void processStream() {
 
-    LOGGER.info("processStreamStateless started");
+    LOGGER.info("NetflixKafkaStreamListener.processStream() started");
 
     StreamsBuilder streamsBuilder = new StreamsBuilder();
 
@@ -67,9 +69,9 @@ public class NetflixKafkaStreamListener {
             });
 
     transformedKStream
-        // Filter all such titles which are listed under type "TV Show".
+        // Step 3: Filter all such titles which are listed under type "TV Show".
         .filter((key, value) -> StringUtils.containsIgnoreCase(value.getType(), "TV Show"))
-        // Replace censored words present in title name with masked characters.
+        // Step 4: Replace censored words present in title name with masked characters.
         .map(
             (key, value) -> {
               AtomicReference<String> titleName = new AtomicReference<>(value.getTitle());
@@ -83,9 +85,25 @@ public class NetflixKafkaStreamListener {
               return KeyValue.pair(
                   key, NetflixTitle.builder(value).setTitle(titleName.get()).build());
             })
-        .foreach(
+        // Step 5: Output the transformed stream to sanitized-data-topic-1.
+        // .to(SANITIZED_DATA_TOPIC_1, Produced.with(Serdes.String(),
+        // CustomSerdes.netflixTitleSerdes()));
+        .peek(
             (key, value) ->
                 LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
+
+    transformedKStream
+        .filter((key, value) -> StringUtils.equalsIgnoreCase(value.getType(), "Movie"))
+        .groupByKey()
+        .windowedBy(TimeWindows.of(Duration.ofSeconds(60)))
+        .count()
+        .toStream()
+        .peek(
+            (key, value) ->
+                LOGGER.info(
+                    "windowedBy 1 minute window Id: {} and count: {}",
+                    key.toString(),
+                    value.toString()));
 
     KafkaStreams kafkaStreams =
         new KafkaStreams(
@@ -94,6 +112,6 @@ public class NetflixKafkaStreamListener {
 
     shutdownKafkaResource(kafkaStreams);
 
-    LOGGER.info("processStreamStateless completed");
+    LOGGER.info("NetflixKafkaStreamListener.processStream() completed");
   }
 }

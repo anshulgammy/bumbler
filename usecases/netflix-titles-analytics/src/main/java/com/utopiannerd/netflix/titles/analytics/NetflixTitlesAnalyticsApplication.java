@@ -47,7 +47,7 @@ public class NetflixTitlesAnalyticsApplication {
     // Custom KafkaStream Consumer.
     NetflixKafkaStreamListener netflixKafkaStreamListener =
         new NetflixKafkaStreamListener(RAW_DATA_TOPIC);
-    netflixKafkaStreamListener.processStreamStateless();
+    netflixKafkaStreamListener.processStream();
 
     // As long as NetflixTitlesStreamingAgent keeps pushing to the raw-data-topic, the application
     // will keep on running.
