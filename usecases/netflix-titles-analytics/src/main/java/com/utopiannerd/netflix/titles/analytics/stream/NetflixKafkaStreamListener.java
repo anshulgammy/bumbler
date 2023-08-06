@@ -1,5 +1,6 @@
 package com.utopiannerd.netflix.titles.analytics.stream;
 
+import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.SANITIZED_DATA_TOPIC;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.NON_NULL_OR_EMPTY_CHECK_MESSAGE;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.createKafkaStreamConfigurationMap;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKafkaResource;
@@ -90,12 +91,12 @@ public final class NetflixKafkaStreamListener {
             })
         .peek(
             (key, value) ->
-                LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value));
-    // Step 5: Output the transformed stream to sanitized-data-topic.
-    /*.to(
-    SANITIZED_DATA_TOPIC,
-    Produced.with(Serdes.String(), Serdes.String()));*/
+                LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value))
+        // Step 5: Output the transformed stream to sanitized-data-topic.
+        .to(SANITIZED_DATA_TOPIC);
 
+    // Doing stateful transformation and finding the count to TV Show/Movie received in the
+    // configured tumbling time window.
     transformedKStream
         .map((key, value) -> KeyValue.pair(value.getType(), value.toString()))
         .groupByKey()

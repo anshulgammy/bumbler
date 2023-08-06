@@ -27,8 +27,8 @@
 - Start Kafka server/broker
 /mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-server-start.sh /mnt/d/DevTools/kafka_2.13-3.5.0/config/server.properties
 - Create topics
-/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic raw-data-topic
-/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 1 --topic sanitized-data-topic
+/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 2 --topic raw-data-topic
+/mnt/d/DevTools/kafka_2.13-3.5.0/bin/kafka-topics.sh --create --bootstrap-server 127.0.0.1:9092 --replication-factor 1 --partitions 2 --topic sanitized-data-topic
 - Overview of topics used 
 raw-data-topic: This topic is populated by NetflixTitlesStreamingAgent with raw data.
 sanitized-data-topic: This topic is populated by NetflixKafkaStreamListener, after applying filter logic and doing transformation.

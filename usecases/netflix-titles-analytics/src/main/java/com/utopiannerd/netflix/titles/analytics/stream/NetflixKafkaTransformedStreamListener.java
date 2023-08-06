@@ -38,9 +38,7 @@ public final class NetflixKafkaTransformedStreamListener {
     kStream.peek(
         (key, value) ->
             LOGGER.info(
-                "NetflixKafkaTransformedStreamListener received record | Key: {} Value: {}",
-                key,
-                value));
+                "Record from sanitized-data-topic received | Key: {} Value: {}", key, value));
 
     KafkaStreams kafkaStreams =
         new KafkaStreams(
