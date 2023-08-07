@@ -1,7 +1,6 @@
 package com.utopiannerd.netflix.titles.analytics.util;
 
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.ACKS_CONFIG;
-import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.APPLICATION_ID;
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.BATCH_SIZE;
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.BOOTSTRAP_SERVERS;
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.COMPRESSION_TYPE;
@@ -9,7 +8,6 @@ import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfig
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.MAX_IN_FLIGHT_CONN;
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.RETRIES_CONFIG;
 
-import com.utopiannerd.netflix.titles.analytics.serdes.CustomSerdes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -41,7 +39,7 @@ public final class KafkaUtil {
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     kafkaConfigurationMap.put(
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-    kafkaConfigurationMap.put(ProducerConfig.CLIENT_ID_CONFIG, APPLICATION_ID);
+    kafkaConfigurationMap.put(ProducerConfig.CLIENT_ID_CONFIG, "raw-data-producer");
 
     // Configuration related to creation of safe Producer
     kafkaConfigurationMap.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
@@ -67,7 +65,8 @@ public final class KafkaUtil {
         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     kafkaConfigurationMap.put(
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    kafkaConfigurationMap.put(ConsumerConfig.GROUP_ID_CONFIG, APPLICATION_ID);
+    kafkaConfigurationMap.put(
+        ConsumerConfig.GROUP_ID_CONFIG, "netflix-titles-analytics-raw-data-group");
     kafkaConfigurationMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
     return kafkaConfigurationMap;
@@ -78,7 +77,8 @@ public final class KafkaUtil {
     Map<String, Object> kafkaConfigurationMap = new HashMap<>();
 
     kafkaConfigurationMap.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-    kafkaConfigurationMap.put(StreamsConfig.APPLICATION_ID_CONFIG, APPLICATION_ID);
+    kafkaConfigurationMap.put(
+        StreamsConfig.APPLICATION_ID_CONFIG, "netflix-titles-analytics-raw-data-group");
     kafkaConfigurationMap.put(
         StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
     kafkaConfigurationMap.put(
@@ -92,12 +92,15 @@ public final class KafkaUtil {
     Map<String, Object> kafkaConfigurationMap = new HashMap<>();
 
     kafkaConfigurationMap.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-    kafkaConfigurationMap.put(StreamsConfig.APPLICATION_ID_CONFIG, "testKS");
+    kafkaConfigurationMap.put(
+        StreamsConfig.APPLICATION_ID_CONFIG, "netflix-titles-analytics-sanitized-data-group");
     kafkaConfigurationMap.put(
         StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
     kafkaConfigurationMap.put(
-        StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
-        CustomSerdes.netflixTitleSerdes().getClass());
+        StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+    /*kafkaConfigurationMap.put(
+    StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+    CustomSerdes.netflixTitleSerdes().getClass());*/
 
     return kafkaConfigurationMap;
   }

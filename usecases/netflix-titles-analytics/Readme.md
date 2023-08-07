@@ -4,8 +4,13 @@
 
 ### Overview of the application:
 
-### Why I didn't leverage the Twitter API in this Kafka use case:
-
+i) NetflixTitlesStreamingAgent in the codebase reads the netflix_titles.csv file from Kaggle, and produce records to a Kafka topic, raw-data-topic, through a custom Kafka producer NetflixKafkaProducer. Intentionally, I have added a delay of 1 second, so it makes the topic to receive data from NetflixTitlesStreamingAgent every second continuously.
+ii) NetflixKafkaStreamListener in the codebase reads from raw-data-topic, applies filter logic, does transformation (stateful as well stateless) on KStream, removes certain keywords and masks them with mask character. And finally, it pushes the sanitized data to sanitized-data-topic.
+iii) NetflixKafkaTransformedStreamListener reads the sanitized data from sanitized-data-topic Kafka topic.
+iv) NetflixTitlesAnalyticsApplication is the starting point of this application. It stitches all the components together and starts the application. This application keeps running till all the records from the netflix_titles.csv file has been read by NetflixTitlesStreamingAgent and pushed to raw-data-topic.
+v) CustomSerdes class provide custom serdes used in the application.
+vi) KafkaConfiguration provides necessary configuration for KafkaStream, KafkaProducer and KafkaConsumer in the application.
+vii) Log4j2 has been used in the application.
 
 ### System Information:
 - Kafka 3.5.0 (Link to download: https://archive.apache.org/dist/kafka/3.5.0/kafka_2.13-3.5.0.tgz)

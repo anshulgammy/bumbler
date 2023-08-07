@@ -11,5 +11,4 @@ public final class KafkaConfiguration {
   public static final String LINGER_CONFIG = "20";
   public static final String BATCH_SIZE = Integer.toString(32 * 1024);
   public static final String NETFLIX_TITLES_CSV_FILE = "netflix_titles.csv";
-  public static final String APPLICATION_ID = "netflix-titles-analytics";
 }

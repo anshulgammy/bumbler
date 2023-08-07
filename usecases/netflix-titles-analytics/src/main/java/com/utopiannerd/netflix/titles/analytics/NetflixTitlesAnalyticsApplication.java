@@ -1,9 +1,11 @@
 package com.utopiannerd.netflix.titles.analytics;
 
 import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.RAW_DATA_TOPIC;
+import static com.utopiannerd.netflix.titles.analytics.configuration.KafkaConfiguration.SANITIZED_DATA_TOPIC;
 
 import com.utopiannerd.netflix.titles.analytics.producer.NetflixKafkaProducer;
 import com.utopiannerd.netflix.titles.analytics.stream.NetflixKafkaStreamListener;
+import com.utopiannerd.netflix.titles.analytics.stream.NetflixKafkaTransformedStreamListener;
 import com.utopiannerd.netflix.titles.analytics.stream.NetflixTitlesStreamingAgent;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -51,9 +53,9 @@ public class NetflixTitlesAnalyticsApplication {
     netflixKafkaStreamListener.processStream();
 
     // Custom KafkaStream which will read from sanitized-data-topic and peek the elements.
-    /*NetflixKafkaTransformedStreamListener netflixKafkaTransformedStreamListener =
+    NetflixKafkaTransformedStreamListener netflixKafkaTransformedStreamListener =
         new NetflixKafkaTransformedStreamListener(SANITIZED_DATA_TOPIC);
-    netflixKafkaTransformedStreamListener.processStream();*/
+    netflixKafkaTransformedStreamListener.processStream();
 
     // As long as NetflixTitlesStreamingAgent keeps pushing to the raw-data-topic, the application
     // will keep on running.

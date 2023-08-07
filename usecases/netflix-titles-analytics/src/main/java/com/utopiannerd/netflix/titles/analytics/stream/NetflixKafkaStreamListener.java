@@ -89,9 +89,9 @@ public final class NetflixKafkaStreamListener {
               return KeyValue.pair(
                   key, NetflixTitle.builder(value).setTitle(titleName.get()).build().toString());
             })
-        .peek(
-            (key, value) ->
-                LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value))
+        /*.peek(
+        (key, value) ->
+            LOGGER.info("transformedKStream received record | Key: {} Value: {}", key, value))*/
         // Step 5: Output the transformed stream to sanitized-data-topic.
         .to(SANITIZED_DATA_TOPIC);
 
@@ -104,7 +104,7 @@ public final class NetflixKafkaStreamListener {
         .count(Materialized.with(Serdes.String(), Serdes.Long()))
         .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
         .toStream()
-        .peek(
+        .foreach(
             (key, value) ->
                 LOGGER.info(
                     "windowedBy result key: {} and value: {}", key.key(), value.toString()));

@@ -1,7 +1,7 @@
 package com.utopiannerd.netflix.titles.analytics.stream;
 
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.NON_NULL_OR_EMPTY_CHECK_MESSAGE;
-import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.createKafkaStreamConfigurationMap;
+import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.createKafkaTransformedStreamConfigurationMap;
 import static com.utopiannerd.netflix.titles.analytics.util.KafkaUtil.shutdownKafkaResource;
 
 import com.google.common.base.Preconditions;
@@ -35,14 +35,15 @@ public final class NetflixKafkaTransformedStreamListener {
     // Step 1: Getting the raw data KStream.
     KStream<String, String> kStream = streamsBuilder.stream(topicName);
 
-    kStream.peek(
+    kStream.foreach(
         (key, value) ->
             LOGGER.info(
                 "Record from sanitized-data-topic received | Key: {} Value: {}", key, value));
 
     KafkaStreams kafkaStreams =
         new KafkaStreams(
-            streamsBuilder.build(), new StreamsConfig(createKafkaStreamConfigurationMap()));
+            streamsBuilder.build(),
+            new StreamsConfig(createKafkaTransformedStreamConfigurationMap()));
     kafkaStreams.start();
 
     shutdownKafkaResource(kafkaStreams);
