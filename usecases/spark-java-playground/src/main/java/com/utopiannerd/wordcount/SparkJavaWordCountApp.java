@@ -19,6 +19,8 @@ public class SparkJavaWordCountApp {
       filePath = args[0];
     } else {
       filePath = SAMPLE_FILE_PATH;
+      // filePath =
+      // ClassLoader.getSystemClassLoader().getResource("sample-input-file.txt").getPath();
     }
 
     System.out.println("Configured filePath is: " + filePath);
@@ -53,7 +55,23 @@ public class SparkJavaWordCountApp {
               .mapToPair(word -> new Tuple2<>(word, 1))
               .reduceByKey((val1, val2) -> val1 + val2);
 
+      System.out.println(
+          "============Printing count of unique words in the provided file============");
+
+      // Printing count of unique words in the provided file.
       countDataRDD.collect().forEach(System.out::println);
+
+      // Preparing JavaPairRDD of max count of words in descending order.
+      JavaPairRDD<String, Integer> descendingMaxCountWordsRDD =
+          countDataRDD
+              .mapToPair(tuple -> new Tuple2<>(tuple._2, tuple._1))
+              .sortByKey(false)
+              .mapToPair(tuple -> new Tuple2<>(tuple._2, tuple._1));
+
+      System.out.println("============Printing top 10 words with maximum count============");
+
+      // Printing top 10 words with maximum count.
+      descendingMaxCountWordsRDD.take(10).forEach(System.out::println);
     }
   }
 }
