@@ -38,5 +38,13 @@
     "batchEndDate": "2023-11-23",
     "totalSeatsCapacity": 700,
     "totalSeatsAvailable": 600
+  },
+  {
+    "batchId": 1006,
+    "courseId": 1002,
+    "batchStartDate": "2023-04-23",
+    "batchEndDate": "2023-12-23",
+    "totalSeatsCapacity": 400,
+    "totalSeatsAvailable": 100
   }
 ]
